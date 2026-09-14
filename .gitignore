@@ -1,5 +1,7 @@
 ## Runtime data (database, separated-audio cache, python venv) — never belongs in source control
-data/
+## Anchored to repo root only: an unanchored "data/" also matches src/KaraokeMaster.Core/Data/
+## (the source folder) on Windows' case-insensitive git, silently dropping it from commits.
+/data/
 
 ## Personal music library — copyrighted audio, never belongs in source control
 music/
