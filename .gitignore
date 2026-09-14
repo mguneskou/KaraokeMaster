@@ -1,0 +1,20 @@
+## Runtime data (database, separated-audio cache, python venv) — never belongs in source control
+data/
+
+## Personal music library — copyrighted audio, never belongs in source control
+music/
+
+## .NET build output
+bin/
+obj/
+publish/
+
+## Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+## OS cruft
+Thumbs.db
+.DS_Store
