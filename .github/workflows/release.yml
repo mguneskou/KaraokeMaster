@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag (e.g. v0.1.0)"
+        required: true
+        default: "v0.1.0"
+      prerelease:
+        description: "Mark as a pre-release"
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ github.event.inputs.prerelease }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore
+        run: dotnet restore KaraokeMaster.sln
+
+      - name: Test
+        run: dotnet test KaraokeMaster.sln -c Release --no-restore
+
+      - name: Publish
+        run: >
+          dotnet publish src/KaraokeMaster.App/KaraokeMaster.App.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish
+
+      - name: Zip artifact
+        shell: pwsh
+        run: Compress-Archive -Path publish/* -DestinationPath "KaraokeMaster-${{ steps.version.outputs.tag }}-win-x64.zip"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: KaraokeMaster ${{ steps.version.outputs.tag }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          generate_release_notes: true
+          files: KaraokeMaster-${{ steps.version.outputs.tag }}-win-x64.zip
+          body: |
+            Self-contained Windows x64 build — no .NET runtime install needed.
+
+            **First run:** vocal separation (Demucs) and auto-lyrics (faster-whisper)
+            are optional, on-demand features. The app prompts to download their
+            Python dependencies + models the first time you use them.
