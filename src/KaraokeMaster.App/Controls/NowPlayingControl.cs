@@ -28,27 +28,27 @@ public sealed class NowPlayingControl : UserControl
         Font = new Font(Control.DefaultFont, FontStyle.Bold),
     };
 
-    private readonly TrackBar _seekBar = new() { Width = RowWidth, Minimum = 0, Maximum = 1000, TickStyle = TickStyle.None };
+    private readonly FlatSlider _seekBar = new() { Width = RowWidth, Minimum = 0, Maximum = 1000 };
     private readonly Label _timeLabel = new() { Width = RowWidth, Height = 20, TextAlign = ContentAlignment.MiddleRight, Text = "0:00 / 0:00" };
     private readonly Button _playPauseButton = new() { Text = "Play", Width = 80 };
     private readonly Button _stopButton = new() { Text = "Stop", Width = 80 };
-    private readonly TrackBar _volumeBar = new() { Minimum = 0, Maximum = 100, Value = 100, Width = 110, TickStyle = TickStyle.None };
+    private readonly FlatSlider _volumeBar = new() { Minimum = 0, Maximum = 100, Value = 100, Width = 110 };
 
-    private readonly TrackBar _pitchBar = new() { Minimum = -12, Maximum = 12, Value = 0, Width = 150, TickFrequency = 1, TickStyle = TickStyle.BottomRight };
+    private readonly FlatSlider _pitchBar = new() { Minimum = -12, Maximum = 12, Value = 0, Width = 150 };
     private readonly Label _pitchValueLabel = new() { Text = "0 st", AutoSize = true, Padding = new Padding(6, 8, 0, 0) };
-    private readonly TrackBar _tempoBar = new() { Minimum = -30, Maximum = 30, Value = 0, Width = 150, TickFrequency = 5, TickStyle = TickStyle.BottomRight };
+    private readonly FlatSlider _tempoBar = new() { Minimum = -30, Maximum = 30, Value = 0, Width = 150 };
     private readonly Label _tempoValueLabel = new() { Text = "0%", AutoSize = true, Padding = new Padding(6, 8, 0, 0) };
 
     private readonly ComboBox _outputDeviceCombo = new() { Width = RowWidth, DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly ComboBox _micDeviceCombo = new() { Width = RowWidth, DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly Button _micToggleButton = new() { Text = "Mic: Off", Width = 100 };
-    private readonly TrackBar _micGainBar = new() { Minimum = 0, Maximum = 200, Value = 100, Width = 150, TickStyle = TickStyle.None };
+    private readonly FlatSlider _micGainBar = new() { Minimum = 0, Maximum = 200, Value = 100, Width = 150 };
     private readonly Label _micGainValueLabel = new() { Text = "100%", AutoSize = true, Padding = new Padding(6, 8, 0, 0) };
 
     private readonly CheckBox _echoEnabledCheckBox = new() { Text = "Echo", Width = 60 };
-    private readonly TrackBar _echoWetBar = new() { Minimum = 0, Maximum = 100, Value = 30, Width = 110, TickStyle = TickStyle.None };
-    private readonly TrackBar _echoFeedbackBar = new() { Minimum = 0, Maximum = 90, Value = 35, Width = 110, TickStyle = TickStyle.None };
-    private readonly TrackBar _echoDelayBar = new() { Minimum = 50, Maximum = 800, Value = 300, Width = 110, TickStyle = TickStyle.None };
+    private readonly FlatSlider _echoWetBar = new() { Minimum = 0, Maximum = 100, Value = 30, Width = 110 };
+    private readonly FlatSlider _echoFeedbackBar = new() { Minimum = 0, Maximum = 90, Value = 35, Width = 110 };
+    private readonly FlatSlider _echoDelayBar = new() { Minimum = 50, Maximum = 800, Value = 300, Width = 110 };
 
     private bool _isSeeking;
     private Song? _currentSong;

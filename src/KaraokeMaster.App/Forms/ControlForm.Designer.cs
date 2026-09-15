@@ -1,3 +1,5 @@
+using KaraokeMaster.App.Controls;
+
 namespace KaraokeMaster.App.Forms;
 
 partial class ControlForm
@@ -24,12 +26,12 @@ partial class ControlForm
     private StatusStrip statusStrip;
     private ToolStripStatusLabel dataRootStatusLabel;
     private SplitContainer mainSplitContainer;
-    private GroupBox libraryGroupBox;
+    private SectionPanel libraryGroupBox;
     private Label libraryPlaceholderLabel;
     private SplitContainer rightSplitContainer;
-    private GroupBox queueGroupBox;
+    private SectionPanel queueGroupBox;
     private Label queuePlaceholderLabel;
-    private GroupBox nowPlayingGroupBox;
+    private SectionPanel nowPlayingGroupBox;
     private Label nowPlayingPlaceholderLabel;
 
     private void InitializeComponent()
@@ -43,12 +45,12 @@ partial class ControlForm
         this.statusStrip = new StatusStrip();
         this.dataRootStatusLabel = new ToolStripStatusLabel();
         this.mainSplitContainer = new SplitContainer();
-        this.libraryGroupBox = new GroupBox();
+        this.libraryGroupBox = new SectionPanel();
         this.libraryPlaceholderLabel = new Label();
         this.rightSplitContainer = new SplitContainer();
-        this.queueGroupBox = new GroupBox();
+        this.queueGroupBox = new SectionPanel();
         this.queuePlaceholderLabel = new Label();
-        this.nowPlayingGroupBox = new GroupBox();
+        this.nowPlayingGroupBox = new SectionPanel();
         this.nowPlayingPlaceholderLabel = new Label();
         ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
         this.mainSplitContainer.Panel1.SuspendLayout();
@@ -119,8 +121,7 @@ partial class ControlForm
         //
         this.libraryGroupBox.Controls.Add(this.libraryPlaceholderLabel);
         this.libraryGroupBox.Dock = DockStyle.Fill;
-        this.libraryGroupBox.Text = "Library";
-        this.libraryGroupBox.Padding = new Padding(8);
+        this.libraryGroupBox.Title = "Library";
         //
         // libraryPlaceholderLabel
         //
@@ -141,8 +142,7 @@ partial class ControlForm
         //
         this.queueGroupBox.Controls.Add(this.queuePlaceholderLabel);
         this.queueGroupBox.Dock = DockStyle.Fill;
-        this.queueGroupBox.Text = "Playlists && Up Next Queue";
-        this.queueGroupBox.Padding = new Padding(8);
+        this.queueGroupBox.Title = "Playlists && Up Next Queue";
         //
         // queuePlaceholderLabel
         //
@@ -154,8 +154,7 @@ partial class ControlForm
         //
         this.nowPlayingGroupBox.Controls.Add(this.nowPlayingPlaceholderLabel);
         this.nowPlayingGroupBox.Dock = DockStyle.Fill;
-        this.nowPlayingGroupBox.Text = "Now Playing / Mixer";
-        this.nowPlayingGroupBox.Padding = new Padding(8);
+        this.nowPlayingGroupBox.Title = "Now Playing / Mixer";
         //
         // nowPlayingPlaceholderLabel
         //

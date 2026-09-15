@@ -1,3 +1,4 @@
+using KaraokeMaster.App.Theming;
 using KaraokeMaster.Core.Data;
 using KaraokeMaster.Core.Models;
 
@@ -43,6 +44,8 @@ public sealed class ManageWatchedFoldersForm : Form
         Controls.Add(_closeButton);
 
         AcceptButton = _closeButton;
+
+        UiTheme.Apply(this);
 
         Load += async (_, _) => await ReloadAsync();
     }

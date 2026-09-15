@@ -1,3 +1,5 @@
+using KaraokeMaster.App.Theming;
+
 namespace KaraokeMaster.App.Forms;
 
 public sealed class TextInputForm : Form
@@ -38,5 +40,7 @@ public sealed class TextInputForm : Form
 
         AcceptButton = okButton;
         CancelButton = cancelButton;
+
+        UiTheme.Apply(this);
     }
 }

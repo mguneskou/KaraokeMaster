@@ -1,3 +1,4 @@
+using KaraokeMaster.App.Theming;
 using KaraokeMaster.Core.Audio;
 using KaraokeMaster.Core.Lyrics;
 using KaraokeMaster.Core.Models;
@@ -72,6 +73,8 @@ public sealed class PerformerForm : Form
         _audioEngine = audioEngine;
 
         Text = "KaraokeMaster — Performer";
+        Icon = AppIcon.TryLoad() ?? Icon;
+        UiTheme.EnableDarkTitleBar(this);
         BackColor = Color.Black;
         ForeColor = Color.White;
         Width = 900;

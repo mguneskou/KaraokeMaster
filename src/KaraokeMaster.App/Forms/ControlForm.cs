@@ -1,4 +1,5 @@
 using KaraokeMaster.App.Controls;
+using KaraokeMaster.App.Theming;
 using KaraokeMaster.Core;
 using KaraokeMaster.Core.Audio;
 using KaraokeMaster.Core.Data;
@@ -31,6 +32,7 @@ public partial class ControlForm : Form
     public ControlForm()
     {
         InitializeComponent();
+        Icon = AppIcon.TryLoad() ?? Icon;
 
         _songRepository = new SongRepository(_connectionFactory);
         _watchedFolderRepository = new WatchedFolderRepository(_connectionFactory);
@@ -49,6 +51,8 @@ public partial class ControlForm : Form
 
         queueGroupBox.Controls.Remove(queuePlaceholderLabel);
         queueGroupBox.Controls.Add(_playlistQueueControl);
+
+        UiTheme.Apply(this);
 
         _libraryGrid.SongActivated += (_, song) =>
         {

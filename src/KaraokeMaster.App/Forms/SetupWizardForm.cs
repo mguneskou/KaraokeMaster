@@ -1,3 +1,4 @@
+using KaraokeMaster.App.Theming;
 using KaraokeMaster.Core;
 using KaraokeMaster.Core.Separation;
 
@@ -56,6 +57,8 @@ public sealed class SetupWizardForm : Form
         Controls.Add(_logBox);
         Controls.Add(_startButton);
         Controls.Add(_infoLabel);
+
+        UiTheme.Apply(this);
 
         _startButton.Click += async (_, _) => await RunSetupAsync();
     }
