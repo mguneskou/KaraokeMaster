@@ -223,6 +223,20 @@ public sealed class EqualizerLyricControl : Control
         }
     }
 
+    /// <summary>
+    /// Graphics.MeasureString(" ", font) is a well-known GDI+ quirk: it frequently returns a
+    /// near-zero width for a lone space character (worse still with GenericTypographic), which
+    /// made words render glued together with no visible gap. Isolating the space's advance width
+    /// by subtracting a with/without-space measurement of the same two characters sidesteps it.
+    /// </summary>
+    private float MeasureSpaceWidth(Graphics g)
+    {
+        var withSpace = g.MeasureString("I I", Font, PointF.Empty, TextMeasureFormat).Width;
+        var withoutSpace = g.MeasureString("II", Font, PointF.Empty, TextMeasureFormat).Width;
+        var spaceWidth = withSpace - withoutSpace;
+        return spaceWidth > 0 ? spaceWidth : Font.Size * 0.28f;
+    }
+
     private void RebuildLayout(Graphics g)
     {
         _layoutLines.Clear();
@@ -235,7 +249,7 @@ public sealed class EqualizerLyricControl : Control
 
         _lineHeight = Font.GetHeight(g) * 1.05f;
         var maxWidth = Math.Max(10, Width - 40);
-        var spaceWidth = g.MeasureString(" ", Font, PointF.Empty, TextMeasureFormat).Width;
+        var spaceWidth = MeasureSpaceWidth(g);
 
         var words = _text.Split(' ');
         var currentLine = new List<WordLayout>();
