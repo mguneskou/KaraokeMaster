@@ -1,3 +1,4 @@
+using KaraokeMaster.App.Controls;
 using KaraokeMaster.App.Theming;
 using KaraokeMaster.Core.Audio;
 using KaraokeMaster.Core.Lyrics;
@@ -11,9 +12,6 @@ namespace KaraokeMaster.App.Forms;
 /// </summary>
 public sealed class PerformerForm : Form
 {
-    private static readonly Color SungColor = Color.Gold;
-    private static readonly Color UnsungColor = Color.White;
-
     private readonly AudioEngine _audioEngine;
 
     private readonly Label _nowSingingLabel = new()
@@ -26,23 +24,13 @@ public sealed class PerformerForm : Form
     };
 
     /// <summary>
-    /// Replaces a plain Label: a RichTextBox lets each word get its own color as playback
-    /// crosses it, for a real karaoke-style sweep. Not Dock=Fill — see RepositionCurrentLineBox,
-    /// which vertically centers it within the space between the header/footer instead, since
-    /// RichTextBox (unlike Label) has no built-in vertical text alignment.
+    /// The "stage": a live audio equalizer filling the whole middle band as a background, with
+    /// the current lyric line drawn on top (vertically centered) - see EqualizerLyricControl for
+    /// why that's one owner-drawn control instead of a RichTextBox layered over a separate
+    /// visualizer control (WinForms control transparency is unreliable, and RichTextBox doesn't
+    /// support a transparent background at all).
     /// </summary>
-    private readonly RichTextBox _currentLineBox = new()
-    {
-        BorderStyle = BorderStyle.None,
-        ReadOnly = true,
-        Multiline = true,
-        WordWrap = true,
-        ScrollBars = RichTextBoxScrollBars.None,
-        TabStop = false,
-        BackColor = Color.Black,
-        ForeColor = UnsungColor,
-        Font = new Font(Control.DefaultFont.FontFamily, 40f, FontStyle.Bold),
-    };
+    private readonly EqualizerLyricControl _visualizer;
 
     private readonly Label _nextLineLabel = new()
     {
@@ -71,6 +59,10 @@ public sealed class PerformerForm : Form
     public PerformerForm(AudioEngine audioEngine)
     {
         _audioEngine = audioEngine;
+        _visualizer = new EqualizerLyricControl(_audioEngine)
+        {
+            Font = new Font(Control.DefaultFont.FontFamily, 40f, FontStyle.Bold),
+        };
 
         Text = "KaraokeMaster — Performer";
         Icon = AppIcon.TryLoad() ?? Icon;
@@ -82,20 +74,20 @@ public sealed class PerformerForm : Form
         StartPosition = FormStartPosition.CenterScreen;
         KeyPreview = true;
 
-        Controls.Add(_currentLineBox);
+        Controls.Add(_visualizer);
         Controls.Add(_nextLineLabel);
         Controls.Add(_hintLabel);
         Controls.Add(_nowSingingLabel);
 
         KeyDown += OnKeyDown;
-        Resize += (_, _) => RepositionCurrentLineBox();
-        Shown += (_, _) => RepositionCurrentLineBox();
+        Resize += (_, _) => RepositionVisualizer();
+        Shown += (_, _) => RepositionVisualizer();
 
         _audioEngine.PositionChanged += OnPositionChanged;
         FormClosed += (_, _) => _audioEngine.PositionChanged -= OnPositionChanged;
 
         ShowIdle();
-        RepositionCurrentLineBox();
+        RepositionVisualizer();
     }
 
     public void ShowSong(Song song, string? singerName = null)
@@ -197,18 +189,7 @@ public sealed class PerformerForm : Form
         }
     }
 
-    private void SetLineText(string text)
-    {
-        _currentLineBox.Clear();
-        _currentLineBox.Text = text;
-        if (text.Length > 0)
-        {
-            _currentLineBox.SelectAll();
-            _currentLineBox.SelectionAlignment = HorizontalAlignment.Center;
-            _currentLineBox.SelectionColor = UnsungColor;
-            _currentLineBox.DeselectAll();
-        }
-    }
+    private void SetLineText(string text) => _visualizer.SetText(text);
 
     /// <summary>Character offset of each word within the line's joined <see cref="LrcLine.Text"/>.</summary>
     private static int[] ComputeWordCharOffsets(IReadOnlyList<LrcWord> words)
@@ -233,35 +214,23 @@ public sealed class PerformerForm : Form
 
         var sungEnd = Math.Min(
             _wordCharOffsets[activeWordIndex] + line.Words[activeWordIndex].Text.Length,
-            _currentLineBox.TextLength);
+            line.Text.Length);
 
-        _currentLineBox.Select(0, sungEnd);
-        _currentLineBox.SelectionColor = SungColor;
-
-        if (sungEnd < _currentLineBox.TextLength)
-        {
-            _currentLineBox.Select(sungEnd, _currentLineBox.TextLength - sungEnd);
-            _currentLineBox.SelectionColor = UnsungColor;
-        }
-
-        _currentLineBox.DeselectAll();
+        _visualizer.SetSungCharEnd(sungEnd);
     }
 
-    private void RepositionCurrentLineBox()
+    private void RepositionVisualizer()
     {
         if (!IsHandleCreated)
         {
             return;
         }
 
-        var availableTop = _nowSingingLabel.Bottom;
-        var availableBottom = _nextLineLabel.Top;
-        var availableHeight = Math.Max(0, availableBottom - availableTop);
+        var top = _nowSingingLabel.Bottom;
+        var bottom = _nextLineLabel.Top;
+        var height = Math.Max(0, bottom - top);
 
-        var desiredHeight = Math.Min(availableHeight, (int)(_currentLineBox.Font.Height * 2.5));
-        var top = availableTop + (availableHeight - desiredHeight) / 2;
-
-        _currentLineBox.SetBounds(0, top, ClientSize.Width, desiredHeight);
+        _visualizer.SetBounds(0, top, ClientSize.Width, height);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -294,6 +263,6 @@ public sealed class PerformerForm : Form
             _hintLabel.Visible = false;
         }
 
-        RepositionCurrentLineBox();
+        RepositionVisualizer();
     }
 }

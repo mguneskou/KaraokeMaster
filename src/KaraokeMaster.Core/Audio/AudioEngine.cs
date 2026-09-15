@@ -29,6 +29,7 @@ public sealed class AudioEngine : IDisposable
 
     private readonly MixingSampleProvider _mixer;
     private readonly VolumeSampleProvider _masterVolumeProvider;
+    private readonly SpectrumAnalyzerSampleProvider _spectrumTap;
 
     private AudioFileReader? _fileReader;
     private SoundTouchSampleProvider? _pitchTempoProvider;
@@ -60,6 +61,7 @@ public sealed class AudioEngine : IDisposable
         _mixer = new MixingSampleProvider(MixFormat) { ReadFully = true };
         _mixer.MixerInputEnded += OnMixerInputEnded;
         _masterVolumeProvider = new VolumeSampleProvider(_mixer) { Volume = _volume };
+        _spectrumTap = new SpectrumAnalyzerSampleProvider(_masterVolumeProvider);
     }
 
     public PlaybackState State { get; private set; } = PlaybackState.Stopped;
@@ -67,6 +69,13 @@ public sealed class AudioEngine : IDisposable
     public TimeSpan Position => _fileReader?.CurrentTime ?? TimeSpan.Zero;
     public TimeSpan Duration => _fileReader?.TotalTime ?? TimeSpan.Zero;
     public bool IsMicActive => _micCapture is not null;
+
+    /// <summary>
+    /// FFT magnitude per bin (512 bins, index 0 = DC) from the most recently completed analysis
+    /// window of the final mixed output (track + mic, post master volume) - for the performer
+    /// window's equalizer visualization. Safe to poll from the UI thread at any rate.
+    /// </summary>
+    public float[] GetLatestSpectrum() => _spectrumTap.GetLatestSpectrum();
 
     /// <summary>Master volume applied to the combined (track + mic) output.</summary>
     public float Volume
@@ -362,7 +371,7 @@ public sealed class AudioEngine : IDisposable
         }
 
         _outputDevice = CreateOutputDevice();
-        _outputDevice.Init(new SampleToWaveProvider(_masterVolumeProvider));
+        _outputDevice.Init(new SampleToWaveProvider(_spectrumTap));
         _outputDevice.Play();
         StartPositionTimer();
     }
