@@ -67,6 +67,7 @@ public partial class ControlForm : Form
 
         manageWatchedFoldersMenuItem.Click += async (_, _) => await OpenManageWatchedFoldersAsync();
         openPerformerWindowMenuItem.Click += (_, _) => OpenPerformerWindow();
+        viewHelpMenuItem.Click += (_, _) => OpenHelp();
         _libraryWatcher.LibraryChanged += (_, _) => ScheduleRefreshOnUiThread();
         _separationQueue.ProgressChanged += (_, args) => ScheduleSeparationProgressOnUiThread(args);
         _lyricsQueue.ProgressChanged += (_, args) => ScheduleLyricsProgressOnUiThread(args);
@@ -150,6 +151,12 @@ public partial class ControlForm : Form
         {
             _performerForm.ShowSong(currentSong);
         }
+    }
+
+    private void OpenHelp()
+    {
+        using var dialog = new HelpForm();
+        dialog.ShowDialog(this);
     }
 
     private async Task OpenManageWatchedFoldersAsync()

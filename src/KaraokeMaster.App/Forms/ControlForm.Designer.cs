@@ -23,6 +23,8 @@ partial class ControlForm
     private ToolStripMenuItem exitMenuItem;
     private ToolStripMenuItem viewMenu;
     private ToolStripMenuItem openPerformerWindowMenuItem;
+    private ToolStripMenuItem helpMenu;
+    private ToolStripMenuItem viewHelpMenuItem;
     private StatusStrip statusStrip;
     private ToolStripStatusLabel dataRootStatusLabel;
     private SplitContainer mainSplitContainer;
@@ -42,6 +44,8 @@ partial class ControlForm
         this.exitMenuItem = new ToolStripMenuItem();
         this.viewMenu = new ToolStripMenuItem();
         this.openPerformerWindowMenuItem = new ToolStripMenuItem();
+        this.helpMenu = new ToolStripMenuItem();
+        this.viewHelpMenuItem = new ToolStripMenuItem();
         this.statusStrip = new StatusStrip();
         this.dataRootStatusLabel = new ToolStripStatusLabel();
         this.mainSplitContainer = new SplitContainer();
@@ -67,7 +71,7 @@ partial class ControlForm
         //
         // menuStrip
         //
-        this.menuStrip.Items.AddRange(new ToolStripItem[] { this.fileMenu, this.viewMenu });
+        this.menuStrip.Items.AddRange(new ToolStripItem[] { this.fileMenu, this.viewMenu, this.helpMenu });
         this.menuStrip.Location = new Point(0, 0);
         this.menuStrip.Name = "menuStrip";
         this.menuStrip.Size = new Size(1100, 24);
@@ -94,6 +98,16 @@ partial class ControlForm
         // openPerformerWindowMenuItem
         //
         this.openPerformerWindowMenuItem.Text = "Open &Performer Window";
+        //
+        // helpMenu
+        //
+        this.helpMenu.DropDownItems.AddRange(new ToolStripItem[] { this.viewHelpMenuItem });
+        this.helpMenu.Text = "&Help";
+        //
+        // viewHelpMenuItem
+        //
+        this.viewHelpMenuItem.Text = "&How to Use KaraokeMaster...";
+        this.viewHelpMenuItem.ShortcutKeys = Keys.F1;
         //
         // statusStrip
         //
